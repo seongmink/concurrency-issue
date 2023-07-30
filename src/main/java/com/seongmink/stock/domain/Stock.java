@@ -1,9 +1,6 @@
 package com.seongmink.stock.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +17,9 @@ public class Stock {
 
     private Long productId;
     private Long quantity;
+
+    @Version
+    private Long version;
 
     public void decrease(Long quantity) {
         if (this.quantity - quantity < 0) {

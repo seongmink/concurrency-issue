@@ -1,4 +1,4 @@
-package com.seongmink.stock.service;
+package com.seongmink.stock.facade;
 
 import com.seongmink.stock.domain.Stock;
 import com.seongmink.stock.repository.StockRepository;
@@ -15,10 +15,10 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class StockServiceTest {
+public class NamedLockStockFacadeTest {
 
     @Autowired
-    private PessimisticLockStockService stockService;
+    private NamedLockStockFacade namedLockStockFacade;
 
     @Autowired
     private StockRepository stockRepository;
@@ -36,15 +36,6 @@ public class StockServiceTest {
     }
 
     @Test
-    public void stock_decrease() {
-        stockService.decrease(1L, 1L);
-
-        Stock stock = stockRepository.findById(1L).orElseThrow();
-
-        assertEquals(99, stock.getQuantity());
-    }
-
-    @Test
     public void stock_decrease_100_request() throws InterruptedException {
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -53,7 +44,7 @@ public class StockServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    stockService.decrease(1L, 1L);
+                    namedLockStockFacade.decrease(1L, 1L);
                 } finally {
                     latch.countDown();
                 }

@@ -4,18 +4,18 @@ import com.seongmink.stock.domain.Stock;
 import com.seongmink.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class StockService {
+public class PessimisticLockStockService {
 
     private final StockRepository stockRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void decrease(Long id, Long quantity) {
-        Stock stock = stockRepository.findById(id).orElseThrow();
+        Stock stock = stockRepository.findByIdWithPessimisticLock(id);
+
         stock.decrease(quantity);
 
         stockRepository.saveAndFlush(stock);
